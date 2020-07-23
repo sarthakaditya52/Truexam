@@ -2,13 +2,14 @@
 
         <h2>Login</h2>
         <br>    
+        <%- include('./messages.ejs') %>
         <label>Email</label>
-        <input type="text" placeholder="Enter Email Id" id="uemail" required><br>
+        <input type="text" placeholder="Enter Email Id" name="email" required><br>
     
         <label>Password</label>
-        <input type="password" placeholder="Enter Password" id="psw" required><br><br>
+        <input type="password" placeholder="Enter Password" name="password" required><br><br>
 
-        <button class="btn btn-success" value="1" name="passRec" type="submit" >Login </button><br><br><br>
+        <button class="btn btn-success" type="submit" >Login </button><br><br><br>
 
         <p>Don't have an account ?<a href="/users/register">Register Here</a></p>
 

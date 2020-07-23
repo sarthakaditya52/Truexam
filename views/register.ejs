@@ -1,20 +1,31 @@
-<form action="/users/login" method="POST" class="boxtype">
+<form action="/users/register" method="POST" class="boxtype">
     
     <h2>Register</h2>
     <br>    
+    <%- include('./messages.ejs') %>
+    <label>Name</label>
+    <input type="text" placeholder="Enter Name" name="name" id="uname" value="<%= typeof name != 'undefined' ? name : '' %>" required><br>
+
     <label>Email</label>
-    <input type="text" placeholder="Enter Email Id" id="uemail" required><br>
+    <input type="text" placeholder="Enter Email Id" name="email" id="uemail" value="<%= typeof email != 'undefined' ? email : '' %>" required><br>
 
     <label>Password</label>
-    <input type="password" placeholder="Enter Password" id="psw" required><br><br>
+    <input type="password" placeholder="Enter Password" name="password" id="psw" value="<%= typeof password != 'undefined' ? password : '' %>" required><br><br>
 
-    <input class="chk" type="checkbox" id="student" name="student" value="Student">
-    <label for="vehicle1"> Register as Student</label>
+    <label>Confirm Password</label>
+    <input type="password" placeholder="Re-Enter Password" name="password2" id="psw" value="<%= typeof password2 != 'undefined' ? password2 : '' %>" required><br><br>
 
-    <input class="chk" type="checkbox" id="instructer" name="instructer" value="Instructer">
-    <label for="vehicle1"> Register as Instructer</label>
+    <span>
+        <input class="chk" type="checkbox" name="userType" value="S">
+        <label for="vehicle1"> Register as Student</label>
+    </span>
 
-    <button class="btn btn-success" value="1" name="passRec" type="submit" >Login </button><br><br><br>
+    <span>
+        <input class="chk" type="checkbox" name="userType" value="I">
+        <label for="vehicle1"> Register as Instructer</label>
+    </span>
+
+    <button class="btn btn-success" type="submit" >Register </button><br><br><br>
 
     <p>Already have an account ?<a href="/users/login">Login Here</a></p>
 
