@@ -1,3 +1,3 @@
 module.exports = {
-    MongoURI: 'Add_YOUR_MONGODB_PATH_HERE'
+    MongoURI: 'mongodb+srv://sarthak:sarthak123@cluster0-waauh.mongodb.net/truexam?retryWrites=true&w=majority'
 }
