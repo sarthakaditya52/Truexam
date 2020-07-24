@@ -1,0 +1,14 @@
+<form action="/users/instructor/createTask" method="POST" class="boxtype" enctype="multipart/form-data">
+
+    <h2>Create a new task</h2>
+    <br>    
+    <%- include('./messages.ejs') %>
+    <label>Enter student's email</label>
+    <input type="text" placeholder="Enter Email Id" name="email" required><br>
+
+    <label>Choose Image</label>
+    <input type="file" name="image" required><br><br>
+
+    <button class="btn btn-success" type="submit" >Create </button><br><br><br>
+
+</form>

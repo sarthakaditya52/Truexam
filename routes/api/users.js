@@ -2,9 +2,38 @@ const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcryptjs');
 const passport = require('passport');
-
-//User Model
+const fs = require('fs');
+const { ensureAuthenticated, ensureStudent, ensureInstructor } =  require('./../../middleware/auth');
+// Models
 const User = require('./../../models/User');
+const Task = require('./../../models/Task');
+
+const multer = require('multer');
+const randomstring = require('randomstring');
+const path = require('path');
+
+const storageOrig = multer.diskStorage({
+    destination: './static/uploads/orignals',
+    filename: function(req, file, callback) {
+        callback(null, randomstring.generate() + path.extname(file.originalname))
+    }		     
+});
+
+const storageEdit = multer.diskStorage({
+    destination: './static/uploads/edits',
+    filename: function(req, file, callback) {
+        callback(null, randomstring.generate() + path.extname(file.originalname))
+    }		     
+});
+
+const fileFilter = (req, file, callback) => {
+    if(file.mimetype === 'image/jpeg' || file.mimetype === 'image/png' || file.mimetype === 'image/jpg')
+        callback(null, true);
+    else
+        callback(null,false);
+}
+const uploadOrig = multer({storage: storageOrig, fileFilter: fileFilter});
+const uploadEdit = multer({storage: storageEdit, fileFilter: fileFilter});
 
 // @route GET users/login
 // @desc Render Login Page
@@ -97,14 +126,102 @@ router.post('/login', (req, res, next) => {
         if(err)
             console.log(err);
         if(user){
-            console.log(user)
+            req.login(user, function(err) {
+                if (err) { return next(err); }
+                if(user.userType === 'S')
+                    res.redirect('/users/student/dashboard')
+                else if (user.userType === 'I')
+                    res.redirect('/users/instructor/dashboard')
+            });
         }
         if(info){
             errors.push({ msg: info.msg});
-            console.log(errors);
             res.render('login',{ errors });
         }
     })(req, res, next);
+});
+
+// @route GET users/logout
+// @desc Logout
+// @access Private
+router.get('/logout', ensureAuthenticated, (req, res) => {
+    req.logout();
+    let success_msg = [];
+    success_msg.push({ msg: 'Logged out successfully'});
+    res.render('login',{
+        success_msg
+    });
+});
+
+// @route GET users/student/dashboard
+// @desc Student's dashboard
+// @access Private
+router.get('/student/dashboard', ensureStudent, (req, res) => {
+    console.log(req.user);
+    res.render('student');
+});
+
+// @route GET users/instructor/dashboard
+// @desc Instructor's dashboard
+// @access Private
+router.get('/instructor/dashboard', ensureInstructor, (req, res) => {
+    res.render('instructor');
+});
+
+// @route GET users/instructor/createTask
+// @desc Create Image Editting Task
+// @access Private
+router.get('/instructor/createTask', ensureInstructor, (req, res) => {
+    res.render('createTask');
+});
+
+// @route POST users/instructor/createTask
+// @desc Create Image Editting Task
+// @access Private
+router.post('/instructor/createTask', ensureInstructor, uploadOrig.single('image'), (req, res) => {
+    const { email } = req.body;
+    let errors = [];
+    let success_msg = [];
+    User.findOne({ email: email})
+        .then(user =>{
+            if(user)
+            {
+                if(user.userType === 'S')
+                {
+                    const newTask = new Task({
+                        insID: req.user._id,
+                        studentEmail: user.email,
+                        origImage: req.file.path.substr(24),
+                        editImage: null,
+                        score: -1
+                    });
+                    newTask.save()
+                    .then(task => {
+                        success_msg.push({ msg: 'Task Created Successfully'});
+                        return res.render('createTask',{
+                            success_msg
+                        });
+                    })
+                    .catch(err => console.log(err));
+                } else {
+                    errors.push({msg: 'No student found with this id'});
+                    return res.render('createTask',{
+                        errors
+                    });
+                    fs.unlink(req.file.path, (err) => {
+                        if (err) throw err;
+                    });
+                }
+            } else {
+                fs.unlink(req.file.path, (err) => {
+                    if (err) throw err;
+                });
+                errors.push({msg: 'No student found with this id'});
+                return res.render('createTask',{
+                    errors
+                });
+            }
+        });
 });
 
 module.exports = router;

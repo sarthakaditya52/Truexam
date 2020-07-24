@@ -12,7 +12,7 @@ require('./middleware/passport')(passport);
 
 // Add Static files
 app.use(express.static(path.join(__dirname, 'static')));
-
+app.use(express.static('./static'));
 //DB config
 const db = require('./config/keys').MongoURI;
 
