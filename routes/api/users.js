@@ -4,6 +4,7 @@ const bcrypt = require('bcryptjs');
 const passport = require('passport');
 const fs = require('fs');
 const { ensureAuthenticated, ensureStudent, ensureInstructor } =  require('./../../middleware/auth');
+
 // Models
 const User = require('./../../models/User');
 const Task = require('./../../models/Task');
@@ -190,8 +191,29 @@ router.post('/student/submitTask/:tid', ensureStudent, uploadEdit.single('image'
 // @route GET users/instructor/dashboard
 // @desc Instructor's dashboard
 // @access Private
-router.get('/instructor/dashboard', ensureInstructor, (req, res) => {
-    res.render('instructor');
+router.get('/instructor/dashboard', ensureInstructor, async (req, res) => {
+    const tasks = await Task.find({ insID: req.user._id });
+    return res.render('instructor',{ tasks });
+});
+
+// @route POST users/instructor/evaluate
+// @desc Instructor evaluate submission
+// @access Private
+router.post('/instructor/evaluate/:tid', ensureInstructor, (req, res) => {
+    const { score } = req.body;
+    taskId = req.params.tid;
+    Task.findOne({ _id: taskId })
+        .then( task => {
+            if(!task) {
+                return res.redirect('/users/instructor/dashboard');
+            }
+            if(task.insID !== String(req.user._id)) {
+                return res.redirect('/users/instructor/dashboard');
+            }
+            task.score = score;
+            task.save();
+            return res.redirect('/users/instructor/dashboard');
+        });
 });
 
 // @route GET users/instructor/createTask

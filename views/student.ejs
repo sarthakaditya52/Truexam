@@ -11,11 +11,11 @@
       </tr>
     </thead>
     <tbody>
-        <% if(typeof tasks != 'undefined'){ %>
+        <% if(typeof tasks != 'undefined'){ let i = 1 %>
             <% tasks.forEach(function(task) { %>
                 <form action="/users/student/submitTask/<%- task._id %>" method="POST" enctype="multipart/form-data">
                     <tr>
-                        <th scope="row">1</th>
+                        <th scope="row"><%- i %></th>
                         <td><a href="/uploads/orignals/<%- task.origImage %>" download="<%- task.origImage %>">Download</a></td>
                         <td>
                             <% if(!task.editImage){ %>
@@ -35,7 +35,7 @@
                         </td>
                     </tr>
                 </form>
-            <% }); %>
+            <% i++ }); %>
         <% } %> 
     </tbody>
   </table>

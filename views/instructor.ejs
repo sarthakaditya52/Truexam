@@ -1,3 +1,50 @@
 <h1>Welcome Instructor</h1>
 <a href="/users/logout" class="btn btn-secondary">Logout</a>
 <a href="/users/instructor/createTask" class="btn btn-secondary">Create a new task</a>
+
+<table class="table">
+    <thead class="thead-light">
+      <tr>
+        <th scope="col">No.</th>
+        <th scope="col">Student ID</th>
+        <th scope="col">Original Image</th>
+        <th scope="col">Editted Image</th>
+        <th scope="col">Score/Status</th>
+        <th scope="col">Submit/Update</th>
+      </tr>
+    </thead>
+    <tbody>
+        <% if(typeof tasks != 'undefined'){ let i = 1 %>
+            <% tasks.forEach(function(task) { %>
+                <form action="/users/instructor/evaluate/<%- task._id %>" method="POST">
+                    <tr>
+                        <th scope="row"><%- i %></th>
+                        <td><%- task.studentEmail %></td>
+                        <td><a href="/uploads/orignals/<%- task.origImage %>" download="<%- task.origImage %>">Download Original</a></td>
+                        <td>
+                            <% if(!task.editImage){ %>
+                                Not submitted yet
+                            <% } else { %>
+                                <a href="/uploads/orignals/<%- task.editImage %>" download="<%- task.editImage %>">Download Editted</a>
+                            <% } %>
+                        </td>
+                        <td>
+                            <% if (task.editImage && task.score > 0) { %>
+                                <input type="number" min="1" max="5" value="<%- task.score %>" name="score" required>
+                            <% } else if (task.editImage && task.score < 0) { %>
+                                <input type="number" min="1" max="5" placeholder="Give Score" name="score" required>
+                            <% } %>
+                        </td>
+                        <td>
+                            <% if (task.editImage && task.score > 0) { %>
+                                <button class="btn btn-success" type="submit" >Update </button>
+                            <% } else if (task.editImage && task.score < 0) { %>
+                                <button class="btn btn-success" type="submit" >Submit </button>
+                            <% } %>
+                        </td>
+                    </tr>
+                </form>
+            <% i++ }); %>
+        <% } %> 
+    </tbody>
+  </table>
