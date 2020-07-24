@@ -156,10 +156,36 @@ router.get('/logout', ensureAuthenticated, (req, res) => {
 // @route GET users/student/dashboard
 // @desc Student's dashboard
 // @access Private
-router.get('/student/dashboard', ensureStudent, (req, res) => {
-    console.log(req.user);
-    res.render('student');
+router.get('/student/dashboard', ensureStudent, async (req, res) => {
+    const tasks = await Task.find({ studentEmail: req.user.email });
+    return res.render('student',{ tasks });
 });
+
+// @route POST users/student/submitTask/:tid
+// @desc Submit editted image
+// @access Private
+router.post('/student/submitTask/:tid', ensureStudent, uploadEdit.single('image'), (req, res) => {
+    taskId = req.params.tid;
+    Task.findOne({ _id: taskId })
+        .then( task => {
+            if(!task) {
+                fs.unlink(req.file.path, (err) => {
+                    if (err) throw err;
+                });
+                return res.redirect('/users/student/dashboard');
+            }
+            if(task.studentEmail !== req.user.email) {
+                fs.unlink(req.file.path, (err) => {
+                    if (err) throw err;
+                });
+                return res.redirect('/users/student/dashboard');
+            }
+            task.editImage = req.file.path.substr(21);
+            task.save();
+            return res.redirect('/users/student/dashboard');
+        });
+});
+
 
 // @route GET users/instructor/dashboard
 // @desc Instructor's dashboard
@@ -204,12 +230,12 @@ router.post('/instructor/createTask', ensureInstructor, uploadOrig.single('image
                     })
                     .catch(err => console.log(err));
                 } else {
+                    fs.unlink(req.file.path, (err) => {
+                        if (err) throw err;
+                    });
                     errors.push({msg: 'No student found with this id'});
                     return res.render('createTask',{
                         errors
-                    });
-                    fs.unlink(req.file.path, (err) => {
-                        if (err) throw err;
                     });
                 }
             } else {

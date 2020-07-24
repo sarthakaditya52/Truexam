@@ -1,2 +1,41 @@
 <h1>Welcome Student</h1>
 <a href="/users/logout" class="btn btn-secondary">Logout</a>
+
+<table class="table">
+    <thead class="thead-light">
+      <tr>
+        <th scope="col">No.</th>
+        <th scope="col">Original Image</th>
+        <th scope="col">Editted Image</th>
+        <th scope="col">Score/Status</th>
+      </tr>
+    </thead>
+    <tbody>
+        <% if(typeof tasks != 'undefined'){ %>
+            <% tasks.forEach(function(task) { %>
+                <form action="/users/student/submitTask/<%- task._id %>" method="POST" enctype="multipart/form-data">
+                    <tr>
+                        <th scope="row">1</th>
+                        <td><a href="/uploads/orignals/<%- task.origImage %>" download="<%- task.origImage %>">Download</a></td>
+                        <td>
+                            <% if(!task.editImage){ %>
+                                <input type="file" name="image" required>
+                            <% } else { %>
+                                <img src="/uploads/edits/<%- task.editImage %>"/>
+                            <% } %>
+                        </td>
+                        <td>
+                            <% if(!task.editImage){ %>
+                                <button class="btn btn-success" type="submit" >Submit </button>
+                            <% } else if (task.score > 0) { %>
+                                <%- task.score %>
+                            <% } else { %>
+                                Not Evaluated yet
+                            <% } %>
+                        </td>
+                    </tr>
+                </form>
+            <% }); %>
+        <% } %> 
+    </tbody>
+  </table>
