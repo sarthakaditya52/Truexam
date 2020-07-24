@@ -40,6 +40,13 @@ const uploadEdit = multer({storage: storageEdit, fileFilter: fileFilter});
 // @desc Render Login Page
 // @access Public
 router.get('/login', (req, res) => {
+    if(req.user)
+    {
+        if(req.user.userType === 'S')
+            return res.redirect('/users/student/dashboard');
+        else if (req.user.userType === 'I')
+            return res.redirect('/users/instructor/dashboard');
+    }
     res.render('login');
 });
 
@@ -47,6 +54,13 @@ router.get('/login', (req, res) => {
 // @desc Render Register Page
 // @access Public
 router.get('/register', (req, res) => {
+    if(req.user)
+    {
+        if(req.user.userType === 'S')
+            return res.redirect('/users/student/dashboard');
+        else if (req.user.userType === 'I')
+            return res.redirect('/users/instructor/dashboard');
+    }
     res.render('register');
 });
 
@@ -137,7 +151,7 @@ router.post('/login', (req, res, next) => {
         }
         if(info){
             errors.push({ msg: info.msg});
-            res.render('login',{ errors });
+            return res.render('login',{ errors });
         }
     })(req, res, next);
 });

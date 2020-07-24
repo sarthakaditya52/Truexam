@@ -1,6 +1,6 @@
-<h1>Welcome Student</h1>
-<a href="/users/logout" class="btn btn-secondary">Logout</a>
-
+<h1>Dashboard</h1>
+<a href="/users/logout" class="btnI btn-secondary">Logout</a>
+<br>
 <table class="table">
     <thead class="thead-light">
       <tr>
@@ -21,7 +21,7 @@
                             <% if(!task.editImage){ %>
                                 <input type="file" name="image" required>
                             <% } else { %>
-                                <img src="/uploads/edits/<%- task.editImage %>"/>
+                                <img class="sImage" src="/uploads/edits/<%- task.editImage %>"/>
                             <% } %>
                         </td>
                         <td>
