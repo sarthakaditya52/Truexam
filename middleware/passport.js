@@ -11,14 +11,14 @@ module.exports = function(passport) {
             User.findOne({ email: email})
                 .then(user => {
                     if(!user)
-                        return done(null, false, { msg: 'That email is not registered' });
+                        return done(null, false, { msg: 'User not found', code: 404 });
 
                     bycript.compare(password, user.password, (err, isMatch) => {
                         if(err) throw err;
                         if(isMatch)
-                            return done(null, user);
+                            return done(null, user, { msg: 'Login successful', code: 200});
                         else
-                            return done(null, false, { msg: 'Password incorrect' });
+                            return done(null, false, { msg: 'Password incorrect' , code: 401 });
                     });
                 })
                 .catch(err => console.log(err));
